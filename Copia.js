@@ -11,7 +11,6 @@ class Game {
 	 * @param {number} height -  height del canvas
 	 * @param {number} amount -  nombre de quadrats per fila de la quadrícula
 	 */
-
 	constructor(width, height, amount) {
 		this.width = width;
 		this.height = height;
@@ -19,7 +18,6 @@ class Game {
 		this.initCanvas(width, height);
 		this.start();
 	}
-
 	/**
 	 * Crea un canvas i es guarda el [context](https://developer.mozilla.org/es/docs/Web/API/CanvasRenderingContext2D) a un atribut per poder
 	 * accedir-hi des dels mètodes de pintar al canvas (com ara drawSquare, clear)
@@ -32,8 +30,15 @@ class Game {
 		canvasHTML.width = width;
 		canvasHTML.height = height;
 		document.getElementById("piton").appendChild(canvasHTML);
-		this.canva = canvasHTML.getContext("2d");
-		this.serp = [0, 1];
+
+		//Crea el primer canvas
+		var ctx = canvasHTML.getContext("2d");
+		ctx.beginPath();
+		ctx.rect(0, 0, width, height);
+		ctx.strokeStyle = "red";
+		ctx.stroke();
+		// Guarda el canvas en una varible del OBJ
+		this.context = ctx.canvas;
 	}
 
 	/**
@@ -41,9 +46,24 @@ class Game {
 	 * Serp al centre, direcció cap a la dreta, puntuació 0
 	 */
 	start() {
-		this.canva.beginPath();
-		this.canva.rect(0, 0, this.width, this.height);
-		this.canva.stroke();
+		this.puntuacio = 0;
+		// this.direccio = [vertical(y), horitizonal(x) ]
+		this.direccio = [-1, 0];
+		`[[0,0],[0,1],[0,2]]`
+	
+
+		//Agafa el canvas del OBJ canvas
+		let canvas2HTML = this.context;
+		var ctx2 = canvas2HTML.getContext("2d");
+		ctx2.beginPath();
+		//Iniciacion de la serpiente
+		this.horizontalSerp = 20;
+		this.verticalSerp = 20;
+		ctx2.rect(this.horizontalSerp, this.verticalSerp, 20, 20);
+		ctx2.sto
+		ctx2.strokeStyle = "blue";
+		ctx2.stroke();
+		this.serpiente = ctx2;
 	}
 
 	/**
@@ -53,26 +73,25 @@ class Game {
 	 * @param {string} color -  color del quadrat
 	 */
 	drawSquare(x, y, color) {
-		let tamanyHeight = this.height / this.amount;
-		let tamanyWidth = this.width / this.amount;
-		this.canva.beginPath();
-		this.canva.rect(tamanyWidth * x, tamanyHeight * y, tamanyHeight, tamanyWidth);
-		this.canva.strokeStyle = color;
-		this.canva.stroke();
+		/* segons la mida del canvas dibuixa un quadrat 
+				fins a (amount), amount el tamanys de la serp
+				entre el tamany de la cuadricula
+		*/
 	}
 
 	/**
 	 * Neteja el canvas (pinta'l de blanc)
 	 */
 	clear() {
-		this.canva.clearRect(0, 0, this.width, this.height);
 	}
 
 	/**
 	 * Dibuixa la serp al canvas
 	 */
 	drawSnake() {
-		this.drawSquare(this.serp[0], this.serp[1], "blue");
+		array.forEach(element => {
+			
+		});
 	}
 
 	/**
@@ -94,6 +113,7 @@ class Game {
 	 * Afegeix un menjar a una posició aleatòria, la posició no ha de ser cap de les de la serp
 	 */
 	addFood() {
+		this.food = [2,7];
 	}
 
 	/**
@@ -101,6 +121,9 @@ class Game {
 	 * @return {Array} - nova posició
 	 */
 	newTile() {
+		// direccio [0,1] dreta ->
+		// horitzontalSerp + 1
+		// verticalSerp-20
 	}
 
 	/**
@@ -108,11 +131,9 @@ class Game {
 	 * i ho dibuixa al canvas
 	 */
 	step() {
-		this.clear()
-		this.start();
+		this.clear();
+		this.serp = this.newTile();
 		this.drawSnake();
-		this.serp[0] = this.serp[0]+1;
-		console.log("a");
 	}
 
 	/**
@@ -120,26 +141,62 @@ class Game {
 	 * @param {event} e - l'event de la tecla premuda
 	 */
 	input(e) {
+		//Segons la posicio indica la direccio
 		switch (e.keyCode) {
 			case 38:
 				console.log("ARRIBA");
+				this.verticalSerp = this.verticalSerp - 20;
 				break;
 			case 37:
 				console.log("IZQUIERDA");
+				this.horizontalSerp = this.horizontalSerp - 20;
 				break;
 			case 39:
 				console.log("DERECHA");
+				this.horizontalSerp = this.horizontalSerp + 20;
 				break;
 			case 40:
 				console.log("ABAJO");
+				this.verticalSerp = this.verticalSerp + 20;
+
 				break;
 			default:
 				console.log(e.keyCode);
 				break;
 		}
+		/* Si la serpiente se pasa del recuadro se resetea la posicion*/
+		if (this.horizontalSerp == 300) {
+			this.horizontalSerp = 0;
+		}
+		/* Si la serpiente se pasa del recuadro se resetea la posicion*/
+		if (this.verticalSerp == 300) {
+			this.verticalSerp = 0;
+		}
+		/* Si la serpiente se pasa del recuadro se resetea la posicion*/
+		if (this.horizontalSerp < 0) {
+			this.horizontalSerp = 300;
+		}
+
+		if (this.verticalSerp < 0) {
+			this.verticalSerp = 300;
+		}
+		/*NO HACE CLEAR, HAY QUE CAMBIARLO */
+
+		this.serpiente.rect(0, 0, 300, 300);
+		this.serpiente.strokeStyle = "red";
+
+		//this.serpiente.rect(this.horizontalSerp, this.verticalSerp, 20, 20)
+		this.serpiente.stroke()
+		/* la serpiente deberia crearse en step() cada vez*/
+		console.log(this.horizontalSerp, this.verticalSerp);
+
 	}
 }
 
 let game = new Game(300, 300, 15); // Crea un nou joc
 document.onkeydown = game.input.bind(game); // Assigna l'event de les tecles a la funció input del nostre joc
 window.setInterval(game.step.bind(game), 100); // Fes que la funció que actualitza el nostre joc s'executi cada 100ms
+console.log("hola");
+
+//Comenza el joc amb la serp al mitg
+game.start()
