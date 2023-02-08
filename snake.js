@@ -18,6 +18,8 @@ class Game {
 		this.amount = amount;
 		this.initCanvas(width, height);
 		this.start();
+		//on comenza la serp com a direccio
+		this.direccioSerp = "dreta";
 	}
 
 	/**
@@ -33,7 +35,7 @@ class Game {
 		canvasHTML.height = height;
 		document.getElementById("piton").appendChild(canvasHTML);
 		this.canva = canvasHTML.getContext("2d");
-		this.serp = [0, 1];
+		this.serp = [1, 1];
 	}
 
 	/**
@@ -101,6 +103,34 @@ class Game {
 	 * @return {Array} - nova posició
 	 */
 	newTile() {
+		let key = this.direccioSerp;
+		switch (key) {
+			case "dreta":
+				//La serp es mou horitzontal derecha
+				this.serp[0] = this.serp[0] + 1
+				break;
+			case "esquerra":
+				///La serp es mou horitzontal izquierda
+				this.serp[0] = this.serp[0] - 1;
+				break;
+			case "amunt":
+				//La serp es mou en vertical arriba
+				this.serp[1] = this.serp[1] - 1;
+				break;
+			case "avall":
+				this.serp[1] = this.serp[1] + 1;
+				break;
+			default: //avall
+				console.log("No esta contemplat");
+				break;
+		}
+		//this.serp[1] = this.serp[1] + 1;
+
+		//Si la serp surt del limits, torna apareixa
+		if (this.serp[0] == 15) this.serp[0] = 0;
+		if (this.serp[1] == 15) this.serp[1] = 0;
+		if (this.serp[0] < 0) this.serp[0] = 15;
+		if (this.serp[1] < 0) this.serp[1] = 15;
 	}
 
 	/**
@@ -111,17 +141,9 @@ class Game {
 		this.clear()
 		this.start();
 		this.drawSnake();
-		//La serp es mou horitzontal
-		//this.serp[0] = this.serp[0] + 1;
+		this.newTile();
 
-		//La serp es mou en vertical
-		this.serp[0] = this.serp[0] + 1;
 
-		//Si la serp surt del limits, torna apareixa
-		if (this.serp[0] == 15) this.serp[0] = 0;
-		if (this.serp[1] == 15) this.serp[1] = 0;
-		if (this.serp[0] < 0) this.serp[0] = 15;
-		if (this.serp[1] < 0) this.serp[1] = 15;
 		console.log("Wii");
 	}
 
@@ -133,15 +155,19 @@ class Game {
 		switch (e.keyCode) {
 			case 38:
 				console.log("ARRIBA");
+				this.direccioSerp = "amunt";
 				break;
 			case 37:
 				console.log("IZQUIERDA");
+				this.direccioSerp = "esquerra";
 				break;
 			case 39:
 				console.log("DERECHA");
+				this.direccioSerp = "dreta";
 				break;
 			case 40:
 				console.log("ABAJO");
+				this.direccioSerp = "avall";
 				break;
 			default:
 				console.log(e.keyCode);
