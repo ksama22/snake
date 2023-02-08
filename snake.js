@@ -111,8 +111,18 @@ class Game {
 		this.clear()
 		this.start();
 		this.drawSnake();
-		this.serp[0] = this.serp[0]+1;
-		console.log("a");
+		//La serp es mou horitzontal
+		//this.serp[0] = this.serp[0] + 1;
+
+		//La serp es mou en vertical
+		this.serp[0] = this.serp[0] + 1;
+
+		//Si la serp surt del limits, torna apareixa
+		if (this.serp[0] == 15) this.serp[0] = 0;
+		if (this.serp[1] == 15) this.serp[1] = 0;
+		if (this.serp[0] < 0) this.serp[0] = 15;
+		if (this.serp[1] < 0) this.serp[1] = 15;
+		console.log("Wii");
 	}
 
 	/**
