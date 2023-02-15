@@ -19,7 +19,7 @@ class Game {
 		this.initCanvas(width, height);
 		this.start();
 		//on comenza la serp com a direccio
-		this.direccioSerp = "dreta";
+		this.direccioSerp = [1, 0];
 	}
 
 	/**
@@ -35,7 +35,7 @@ class Game {
 		canvasHTML.height = height;
 		document.getElementById("piton").appendChild(canvasHTML);
 		this.canva = canvasHTML.getContext("2d");
-		this.serp = [[0,0],[0,1],[0,2]]
+		this.serp = [[0, 0], [1, 0], [2, 0], [3, 0]];
 	}
 
 	/**
@@ -78,6 +78,7 @@ class Game {
 	 * Dibuixa la serp al canvas
 	 */
 	drawSnake() {
+
 		for (let i = 0; i < this.serp.length; i++) {
 			this.drawSquare(this.serp[i][0], this.serp[i][1], "green");
 		}
@@ -87,6 +88,7 @@ class Game {
 	 * Dibuixa la poma al canvas
 	 */
 	drawFood() {
+		this.drawSquare(this.poma[0], this.poma[1], "red");
 	}
 
 	/**
@@ -96,14 +98,18 @@ class Game {
 	 * @return {boolean} - xoca o no
 	 */
 	collides(x, y) {
+		if (this.serp[this.serp.length - 1][0] == x && this.serp[this.serp.length - 1][1] == y) {
+			console.log("CHOCOOOOOO!!!");
+			return true;
+		}
+		return false;
 	}
 
 	/**
 	 * Afegeix un menjar a una posició aleatòria, la posició no ha de ser cap de les de la serp
 	 */
 	addFood() {
-		this.poma = [4,5];
-		this.drawSquare(randInt(0,this.amount),randInt(0,this.amount), "red");
+		this.poma = [4, 5];
 	}
 
 	/**
@@ -111,30 +117,17 @@ class Game {
 	 * @return {Array} - nova posició
 	 */
 	newTile() {
-		for (let i = 0; i < this.serp.length; i++) {
-			let key = this.direccioSerp;
-			switch (key) {
-				case "dreta":
-					//La serp es mou horitzontal derecha
-					this.serp[i][0] = this.serp[i][0] + 1;
-					break;
-				case "esquerra":
-					///La serp es mou horitzontal izquierda
-					this.serp[i][0] = this.serp[i][0] - 1;
-					break;
-				case "amunt":
-					//La serp es mou en vertical arriba
-					this.serp[i][1] = this.serp[i][1] - 1;
-					break;
-				case "avall":
-					this.serp[i][1] = this.serp[i][1] + 1;
-					break;
-				default: //avall
-					console.log("No esta contemplat");
-					break;
-			}
-			//this.serp[i][1] = this.serp[i][1] + 1;
+		//Actualiza la nueva posicion de la serpiente
+		let nouX = (this.serp[this.serp.length - 1][0] + this.direccioSerp[0]);
+		let nouY = (this.serp[this.serp.length - 1][1] + this.direccioSerp[1]);
+		//Borra el ultimo
+		this.serp.shift();
+		
+		//Añade el primero
+		this.serp.push([nouX, nouY]);
 
+
+		for (let i = 0; i < this.serp.length; i++) {
 			//Si la serp surt del limits, torna apareixa
 			if (this.serp[i][0] == this.amount) this.serp[i][0] = 0;
 			if (this.serp[i][1] == this.amount) this.serp[i][1] = 0;
@@ -152,9 +145,16 @@ class Game {
 		this.clear()
 		this.drawSnake();
 		this.newTile();
+		this.drawFood();
 
+		if (this.collides(this.poma[0], this.poma[1])) {
+			console.log("vamoooooh");
+			this.poma = [randInt(0, 14), randInt(0, 14)];
 
-		console.log("Wii");
+			//Tindria que NO fer el shift
+			this.serp.push(this.serp.length-1)
+		}
+		//console.log("Wii");
 	}
 
 	/**
@@ -165,20 +165,19 @@ class Game {
 		switch (e.keyCode) {
 			case 38:
 				console.log("ARRIBA");
-				
-				this.direccioSerp = "amunt";
+				this.direccioSerp = [0, -1];
 				break;
 			case 37:
 				console.log("IZQUIERDA");
-				this.direccioSerp = "esquerra";
+				this.direccioSerp = [-1, 0];
 				break;
 			case 39:
 				console.log("DERECHA");
-				this.direccioSerp = "dreta";
+				this.direccioSerp = [1, 0];
 				break;
 			case 40:
 				console.log("ABAJO");
-				this.direccioSerp = "avall";
+				this.direccioSerp = [0, 1];
 				break;
 			default:
 				console.log(e.keyCode);
@@ -189,12 +188,11 @@ class Game {
 
 let game = new Game(500, 500, 15); // Crea un nou joc
 document.onkeydown = game.input.bind(game); // Assigna l'event de les tecles a la funció input del nostre joc
-window.setInterval(game.step.bind(game), 400); // Fes que la funció que actualitza el nostre joc s'executi cada 100ms
+window.setInterval(game.step.bind(game), 200); // Fes que la funció que actualitza el nostre joc s'executi cada 100ms
 
 
 function randInt(min, max) {
 	min = Math.ceil(min);
 	max = Math.floor(max);
 	return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
-  }
-  
+}
