@@ -35,7 +35,7 @@ class Game {
 		canvasHTML.height = height;
 		document.getElementById("piton").appendChild(canvasHTML);
 		this.canva = canvasHTML.getContext("2d");
-		this.serp = [1, 1];
+		this.serp = [[0,0],[0,1],[0,2]]
 	}
 
 	/**
@@ -46,6 +46,7 @@ class Game {
 		this.canva.beginPath();
 		this.canva.rect(0, 0, this.width, this.height);
 		this.canva.stroke();
+		this.addFood();
 	}
 
 	/**
@@ -68,13 +69,18 @@ class Game {
 	 */
 	clear() {
 		this.canva.clearRect(0, 0, this.width, this.height);
+		this.canva.beginPath();
+		this.canva.rect(0, 0, this.width, this.height);
+		this.canva.stroke();
 	}
 
 	/**
 	 * Dibuixa la serp al canvas
 	 */
 	drawSnake() {
-		this.drawSquare(this.serp[0], this.serp[1], "blue");
+		for (let i = 0; i < this.serp.length; i++) {
+			this.drawSquare(this.serp[i][0], this.serp[i][1], "green");
+		}
 	}
 
 	/**
@@ -96,6 +102,8 @@ class Game {
 	 * Afegeix un menjar a una posició aleatòria, la posició no ha de ser cap de les de la serp
 	 */
 	addFood() {
+		this.poma = [4,5];
+		this.drawSquare(randInt(0,this.amount),randInt(0,this.amount), "red");
 	}
 
 	/**
@@ -103,34 +111,37 @@ class Game {
 	 * @return {Array} - nova posició
 	 */
 	newTile() {
-		let key = this.direccioSerp;
-		switch (key) {
-			case "dreta":
-				//La serp es mou horitzontal derecha
-				this.serp[0] = this.serp[0] + 1
-				break;
-			case "esquerra":
-				///La serp es mou horitzontal izquierda
-				this.serp[0] = this.serp[0] - 1;
-				break;
-			case "amunt":
-				//La serp es mou en vertical arriba
-				this.serp[1] = this.serp[1] - 1;
-				break;
-			case "avall":
-				this.serp[1] = this.serp[1] + 1;
-				break;
-			default: //avall
-				console.log("No esta contemplat");
-				break;
-		}
-		//this.serp[1] = this.serp[1] + 1;
+		for (let i = 0; i < this.serp.length; i++) {
+			let key = this.direccioSerp;
+			switch (key) {
+				case "dreta":
+					//La serp es mou horitzontal derecha
+					this.serp[i][0] = this.serp[i][0] + 1;
+					break;
+				case "esquerra":
+					///La serp es mou horitzontal izquierda
+					this.serp[i][0] = this.serp[i][0] - 1;
+					break;
+				case "amunt":
+					//La serp es mou en vertical arriba
+					this.serp[i][1] = this.serp[i][1] - 1;
+					break;
+				case "avall":
+					this.serp[i][1] = this.serp[i][1] + 1;
+					break;
+				default: //avall
+					console.log("No esta contemplat");
+					break;
+			}
+			//this.serp[i][1] = this.serp[i][1] + 1;
 
-		//Si la serp surt del limits, torna apareixa
-		if (this.serp[0] == 15) this.serp[0] = 0;
-		if (this.serp[1] == 15) this.serp[1] = 0;
-		if (this.serp[0] < 0) this.serp[0] = 15;
-		if (this.serp[1] < 0) this.serp[1] = 15;
+			//Si la serp surt del limits, torna apareixa
+			if (this.serp[i][0] == this.amount) this.serp[i][0] = 0;
+			if (this.serp[i][1] == this.amount) this.serp[i][1] = 0;
+			if (this.serp[i][0] < 0) this.serp[i][0] = this.amount;
+			if (this.serp[i][1] < 0) this.serp[i][1] = this.amount;
+		}
+
 	}
 
 	/**
@@ -139,7 +150,6 @@ class Game {
 	 */
 	step() {
 		this.clear()
-		this.start();
 		this.drawSnake();
 		this.newTile();
 
@@ -155,6 +165,7 @@ class Game {
 		switch (e.keyCode) {
 			case 38:
 				console.log("ARRIBA");
+				
 				this.direccioSerp = "amunt";
 				break;
 			case 37:
@@ -176,6 +187,14 @@ class Game {
 	}
 }
 
-let game = new Game(300, 300, 15); // Crea un nou joc
+let game = new Game(500, 500, 15); // Crea un nou joc
 document.onkeydown = game.input.bind(game); // Assigna l'event de les tecles a la funció input del nostre joc
-window.setInterval(game.step.bind(game), 100); // Fes que la funció que actualitza el nostre joc s'executi cada 100ms
+window.setInterval(game.step.bind(game), 400); // Fes que la funció que actualitza el nostre joc s'executi cada 100ms
+
+
+function randInt(min, max) {
+	min = Math.ceil(min);
+	max = Math.floor(max);
+	return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
+  }
+  
