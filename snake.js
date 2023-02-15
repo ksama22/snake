@@ -35,7 +35,7 @@ class Game {
 		canvasHTML.height = height;
 		document.getElementById("piton").appendChild(canvasHTML);
 		this.canva = canvasHTML.getContext("2d");
-		this.serp = [[0, 0], [1, 0], [2, 0], [3, 0]];
+		this.serp = [[0, 0], [1, 0]];
 	}
 
 	/**
@@ -47,6 +47,7 @@ class Game {
 		this.canva.rect(0, 0, this.width, this.height);
 		this.canva.stroke();
 		this.addFood();
+		this.puntuacio = 0;
 	}
 
 	/**
@@ -99,7 +100,6 @@ class Game {
 	 */
 	collides(x, y) {
 		if (this.serp[this.serp.length - 1][0] == x && this.serp[this.serp.length - 1][1] == y) {
-			console.log("CHOCOOOOOO!!!");
 			return true;
 		}
 		return false;
@@ -122,7 +122,6 @@ class Game {
 		let nouY = (this.serp[this.serp.length - 1][1] + this.direccioSerp[1]);
 		//Borra el ultimo
 		this.serp.shift();
-		
 		//Añade el primero
 		this.serp.push([nouX, nouY]);
 
@@ -148,13 +147,16 @@ class Game {
 		this.drawFood();
 
 		if (this.collides(this.poma[0], this.poma[1])) {
-			console.log("vamoooooh");
 			this.poma = [randInt(0, 14), randInt(0, 14)];
-
 			//Tindria que NO fer el shift
-			this.serp.push(this.serp.length-1)
+			this.serp.unshift(this.serp.length - 1)
+			//this.serp.unshift(this.serp[0])
+			this.puntuacio++;
 		}
+		
 		//console.log("Wii");
+		//Actualitza la puntuacio
+		document.getElementById("puntos").innerText = this.puntuacio;
 	}
 
 	/**
@@ -164,32 +166,30 @@ class Game {
 	input(e) {
 		switch (e.keyCode) {
 			case 38:
-				console.log("ARRIBA");
+				//console.log("ARRIBA");
 				this.direccioSerp = [0, -1];
 				break;
 			case 37:
-				console.log("IZQUIERDA");
+				//console.log("IZQUIERDA");
 				this.direccioSerp = [-1, 0];
 				break;
 			case 39:
-				console.log("DERECHA");
+				//console.log("DERECHA");
 				this.direccioSerp = [1, 0];
 				break;
 			case 40:
-				console.log("ABAJO");
+				//console.log("ABAJO");
 				this.direccioSerp = [0, 1];
 				break;
 			default:
-				console.log(e.keyCode);
+				//console.log(e.keyCode);
 				break;
 		}
 	}
 }
-
 let game = new Game(500, 500, 15); // Crea un nou joc
 document.onkeydown = game.input.bind(game); // Assigna l'event de les tecles a la funció input del nostre joc
 window.setInterval(game.step.bind(game), 200); // Fes que la funció que actualitza el nostre joc s'executi cada 100ms
-
 
 function randInt(min, max) {
 	min = Math.ceil(min);
