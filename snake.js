@@ -109,7 +109,7 @@ class Game {
 	 * Afegeix un menjar a una posició aleatòria, la posició no ha de ser cap de les de la serp
 	 */
 	addFood() {
-		this.poma = [4, 5];
+		this.poma = [randInt(0, this.amount-1), randInt(0, this.amount-1)];
 	}
 
 	/**
@@ -145,15 +145,19 @@ class Game {
 		this.drawSnake();
 		this.newTile();
 		this.drawFood();
-
 		if (this.collides(this.poma[0], this.poma[1])) {
-			this.poma = [randInt(0, 14), randInt(0, 14)];
+			do {
+				this.addFood()
+			}
+			while (this.serp.some(r => this.poma.includes(r)));
+			//while (this.serp[0] == this.poma[0] && this.serp[1] == this.poma[1]);
 			//Tindria que NO fer el shift
 			this.serp.unshift(this.serp.length - 1)
 			//this.serp.unshift(this.serp[0])
 			this.puntuacio++;
 		}
 		
+
 		//console.log("Wii");
 		//Actualitza la puntuacio
 		document.getElementById("puntos").innerText = this.puntuacio;
@@ -164,26 +168,39 @@ class Game {
 	 * @param {event} e - l'event de la tecla premuda
 	 */
 	input(e) {
+		//Es guarda la novaPosicio en variable
+		let novaPos = [0, 0];
 		switch (e.keyCode) {
 			case 38:
 				//console.log("ARRIBA");
-				this.direccioSerp = [0, -1];
+				novaPos = [0, -1];
 				break;
 			case 37:
 				//console.log("IZQUIERDA");
-				this.direccioSerp = [-1, 0];
+				novaPos = [-1, 0];
 				break;
 			case 39:
 				//console.log("DERECHA");
-				this.direccioSerp = [1, 0];
+				novaPos = [1, 0];
 				break;
 			case 40:
 				//console.log("ABAJO");
-				this.direccioSerp = [0, 1];
+				novaPos = [0, 1];
 				break;
 			default:
 				//console.log(e.keyCode);
 				break;
+		}
+		//Definim la suma amb cualsevol valor
+		let suma = [0, 0];
+		suma[0] = this.direccioSerp[0] + novaPos[0];
+		suma[1] = this.direccioSerp[1] + novaPos[1];
+		//Si els valors sons els contraris dona 0,0 no deixa
+		// esquerra cap a detra NO
+		// amunt cap a avall NO
+		if (suma[0] != 0 && suma[1] != 0) {
+			//Si no va a direccio contraria, actualiza
+			this.direccioSerp = novaPos;
 		}
 	}
 }
